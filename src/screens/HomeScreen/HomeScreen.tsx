@@ -1,17 +1,12 @@
-import {View, Text} from 'react-native';
 import React from 'react';
+import {View, Text} from 'react-native';
 
-export default function HomeScreen() {
+const HomeScreen = () => {
   return (
-    <View>
-      <Text>Home</Text>
-      <View
-        style={{
-          width: 200,
-          height: 200,
-          backgroundColor: 'red',
-        }}
-      />
+    <View className="bg-slate-200">
+      <Text>Welcome to the Home Screen!</Text>
     </View>
   );
-}
+};
+
+export default HomeScreen;

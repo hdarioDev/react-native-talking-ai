@@ -1,18 +1,13 @@
 import React from 'react';
 import {Navigator} from './src/navigation';
-import styled from 'styled-components/native';
-// import {Text} from 'react-native';
+import {SafeAreaView} from 'react-native';
 
 const App = () => {
   return (
-    <Container>
+    <SafeAreaView className="flex-1">
       <Navigator />
-    </Container>
+    </SafeAreaView>
   );
 };
 
 export default App;
-
-const Container = styled.SafeAreaView`
-  flex: 1;
-`;

@@ -3,13 +3,18 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {HomeScreen, LoginScreen} from '../screens';
 
-const Stack = createNativeStackNavigator();
+export type RootStackParams = {
+  home: undefined;
+  login: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParams>();
 
 function Navigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="HomeScreen"
+        initialRouteName="login"
         screenOptions={{
           headerShown: false,
           headerShadowVisible: false,
@@ -17,8 +22,8 @@ function Navigator() {
             backgroundColor: '#fff',
           },
         }}>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="home" component={HomeScreen} />
+        <Stack.Screen name="login" component={LoginScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
