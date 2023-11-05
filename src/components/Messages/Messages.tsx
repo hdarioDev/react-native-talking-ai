@@ -4,18 +4,20 @@ import {Message} from '../../constants/dummy';
 
 interface Props {
   messages: Message[];
+  ScrollViewRef?: any;
 }
 
-const Messages = ({messages}: Props) => {
+const Messages = ({messages, ScrollViewRef}: Props) => {
   return (
-    <View className="flex-1 space-y-2">
+    <View className="flex-1 space-y-2 ">
       <Text className="text-2xl text-gray-700 font-semibold ml-1">
         Assistant
       </Text>
-      <View className="bg-neutral-200 rounded-3xl p-4 h-3/4">
+      <View className="bg-neutral-200 rounded-3xl p-4 h-5/6">
         <ScrollView
           className="space-y-4"
           bounces={false}
+          ref={ScrollViewRef}
           showsVerticalScrollIndicator={false}>
           {messages.map((message, index) => {
             if (message.role === 'assistant') {

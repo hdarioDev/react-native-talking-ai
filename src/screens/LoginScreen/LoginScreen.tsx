@@ -1,8 +1,9 @@
 import {View, Text, SafeAreaView, Image, TouchableOpacity} from 'react-native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
+
 import {RootStackParams} from '../../navigation/Navigator';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 export default function LoginScreen() {
   const navigation =
