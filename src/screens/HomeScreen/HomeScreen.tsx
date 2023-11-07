@@ -1,12 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  Text,
-  Alert,
-  ScrollView,
-} from 'react-native';
+import {View, Image, Alert, ScrollView} from 'react-native';
+import Tts from 'react-native-tts';
 import Voice, {
   SpeechEndEvent,
   SpeechErrorEvent,
@@ -14,9 +8,11 @@ import Voice, {
   SpeechStartEvent,
 } from '@react-native-community/voice';
 
-import {Features, Messages} from '../../components';
+import {Features, FooterActions, Messages} from '../../components';
 import {Message} from '../../constants/dummy';
 import {apiCall} from '../../api/openAi';
+
+// Tts.setDefaultLanguage('es-ES');
 
 const HomeScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -27,6 +23,7 @@ const HomeScreen = () => {
   const ScrollViewRef = useRef<ScrollView>(null);
 
   const stopSpeaking = () => {
+    Tts.stop();
     setSpeaking(false);
   };
 
@@ -51,7 +48,7 @@ const HomeScreen = () => {
 
   const startRecording = async () => {
     setRecording(true);
-    // Tts.stop();
+    Tts.stop();
     try {
       // await Voice.start('en-GB'); // en-US
       await Voice.start('es-ES');
@@ -72,10 +69,23 @@ const HomeScreen = () => {
   };
 
   const clear = () => {
-    // Tts.stop();
+    Tts.stop();
     setSpeaking(false);
     setLoading(false);
     setMessages([]);
+  };
+
+  const startTextToSpeach = (message: Message) => {
+    Tts.getInitStatus().then(() => {
+      Tts.setDefaultLanguage('es-ES');
+      Tts.speak(message.content);
+    });
+
+    // if(!message.content.includes('https')){
+    setSpeaking(true);
+    // playing response with the voice id and voice speed
+
+    // }
   };
 
   const fetchResponse = async () => {
@@ -93,7 +103,7 @@ const HomeScreen = () => {
       updateScrollView();
 
       // fetching response from chatGPT with our prompt and old messages
-      apiCall(result.trim(), newMessages).then(res => {
+      apiCall(result.trim(), newMessages).then((res: any) => {
         // console.log('got api data');
         setLoading(false);
         console.log('responde : ', res);
@@ -104,7 +114,9 @@ const HomeScreen = () => {
           updateScrollView();
 
           // now play the response to user
-          // startTextToSpeach(res.data[res.data.length - 1]);
+          console.log('PLAYER SPEAKING ', res.data[res.data.length - 1]);
+
+          startTextToSpeach(res.data[res.data.length - 1]);
         } else {
           Alert.alert('Error', res.msg);
         }
@@ -122,10 +134,13 @@ const HomeScreen = () => {
     Voice.onSpeechError = speechErrorHandler;
 
     // text to speech events
-    // Tts.setDefaultLanguage('en-IE');
-    // Tts.addEventListener('tts-start', event => console.log('start', event));
-    // Tts.addEventListener('tts-finish', event => {console.log('finish', event); setSpeaking(false)});
-    // Tts.addEventListener('tts-cancel', event => console.log('cancel', event));
+    Tts.setDefaultLanguage('en-IE');
+    Tts.addEventListener('tts-start', event => console.log('start', event));
+    Tts.addEventListener('tts-finish', event => {
+      console.log('finish', event);
+      setSpeaking(false);
+    });
+    Tts.addEventListener('tts-cancel', event => console.log('cancel', event));
 
     return () => {
       // destroy the voice instance after component unmounts
@@ -142,66 +157,31 @@ const HomeScreen = () => {
   console.log('result', result);
 
   return (
-    <View className="flex-1 flex mx-5">
-      <View className="flex-row justify-center">
-        <Image
-          className="w-36 h-36"
-          source={require('../../../assets/images/welcome.png')}
-        />
-      </View>
-      {messages.length > 0 ? (
-        <Messages messages={messages} ScrollViewRef={ScrollViewRef} />
-      ) : (
-        <Features />
-      )}
-      <View className="flex justify-center items-center">
-        {/* <Image
-          className="rounded-full h-24 w-24"
-          source={require('../../../assets/images/recordingIcon.png')}
-        /> */}
-
-        {loading ? (
+    <>
+      <View className="flex-1 flex mx-5">
+        <View className="flex-row justify-center">
           <Image
-            className=" h-20 w-20"
-            source={require('../../../assets/images/loading.gif')}
-            // style={{width: hp(10), height: hp(10)}}
+            className="w-36 h-36"
+            source={require('../../../assets/images/welcome.png')}
           />
-        ) : recording ? (
-          <TouchableOpacity className="space-y-2" onPress={stopRecording}>
-            {/* recording stop button */}
-            <Image
-              className="rounded-full h-20 w-20"
-              source={require('../../../assets/images/voiceLoading.gif')}
-              // style={{width: hp(10), height: hp(10)}}
-            />
-          </TouchableOpacity>
+        </View>
+        {messages.length > 0 ? (
+          <Messages messages={messages} ScrollViewRef={ScrollViewRef} />
         ) : (
-          <TouchableOpacity onPress={startRecording}>
-            {/* recording start button */}
-            <Image
-              className="rounded-full h-20 w-20"
-              source={require('../../../assets/images/recordingIcon.png')}
-              // style={{width: hp(10), height: hp(10)}}
-            />
-          </TouchableOpacity>
-        )}
-
-        {messages.length > 0 && (
-          <TouchableOpacity
-            onPress={clear}
-            className="bg-neutral-400 rounded-3xl p-2 absolute right-10">
-            <Text className="text-white font-semibold">Clear</Text>
-          </TouchableOpacity>
-        )}
-        {speaking && (
-          <TouchableOpacity
-            onPress={stopSpeaking}
-            className="bg-red-400 rounded-3xl p-2 absolute left-10">
-            <Text className="text-white font-semibold">Stop</Text>
-          </TouchableOpacity>
+          <Features />
         )}
       </View>
-    </View>
+      <FooterActions
+        loading={loading}
+        recording={recording}
+        stopRecording={stopRecording}
+        startRecording={startRecording}
+        messages={messages}
+        speaking={speaking}
+        stopSpeaking={stopSpeaking}
+        clear={clear}
+      />
+    </>
   );
 };
 
