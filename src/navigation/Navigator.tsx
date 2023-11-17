@@ -21,6 +21,7 @@ function Navigator() {
           contentStyle: {
             backgroundColor: '#fff',
           },
+          animation: 'slide_from_right',
         }}>
         <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="login" component={LoginScreen} />

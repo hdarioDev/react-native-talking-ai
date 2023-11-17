@@ -4,7 +4,7 @@ import React from 'react';
 const Features = () => {
   return (
     <View className="space-y-4">
-      <Text className="font-semibold text-gray-600 text-3xl">Features</Text>
+      <Text className="font-semibold text-gray-600 text-3xl" />
       <View className="bg-emerald-200 p-4 rounded-xl space-y-2">
         <View className="flex-row items-center space-x-2">
           <Image

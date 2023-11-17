@@ -1,5 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Image, Alert, ScrollView} from 'react-native';
+import {
+  View,
+  // Image,
+  Alert,
+  ScrollView,
+  ImageBackground,
+  StyleSheet,
+} from 'react-native';
 import Tts from 'react-native-tts';
 import Voice, {
   SpeechEndEvent,
@@ -7,12 +14,28 @@ import Voice, {
   SpeechResultsEvent,
   SpeechStartEvent,
 } from '@react-native-community/voice';
-
 import {Features, FooterActions, Messages} from '../../components';
 import {Message} from '../../constants/dummy';
 import {apiCall} from '../../api/openAi';
+import {BlurView} from '@react-native-community/blur';
+import SwitchSelector from 'react-native-switch-selector';
 
-// Tts.setDefaultLanguage('es-ES');
+// Tts.setDefaultLanguage(lenguage);
+
+const options = [
+  {
+    label: 'Español',
+    value: '0',
+    testID: 'es-ES',
+    accessibilityLabel: 'es-ES',
+  },
+  {
+    label: 'Inglés',
+    value: '1',
+    testID: 'en-US',
+    accessibilityLabel: 'en-US',
+  },
+];
 
 const HomeScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,6 +44,7 @@ const HomeScreen = () => {
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const ScrollViewRef = useRef<ScrollView>(null);
+  const [lenguage, setLenguage] = useState('es-ES');
 
   const stopSpeaking = () => {
     Tts.stop();
@@ -32,7 +56,6 @@ const HomeScreen = () => {
   };
 
   const speechEndHandler = (e: SpeechEndEvent) => {
-    // setRecording(false);
     console.log('FIN ???? speech end', e);
   };
 
@@ -40,6 +63,7 @@ const HomeScreen = () => {
     console.log('>>>>>>>>>>>>>>>>>>>>>   speech event', e);
     const text = e.value ? e.value[0] : '';
     setResult(text);
+    stopRecording(text);
   };
 
   const speechErrorHandler = (e: SpeechErrorEvent) => {
@@ -51,21 +75,21 @@ const HomeScreen = () => {
     Tts.stop();
     try {
       // await Voice.start('en-GB'); // en-US
-      await Voice.start('es-ES');
+      await Voice.start(lenguage);
     } catch (error) {
       console.log('error', error);
     }
   };
-  const stopRecording = async () => {
-    console.log('stopRecording ()');
+  const stopRecording = async (text: string) => {
+    console.log('stopRecording ()', text);
 
     setRecording(false);
-    setTimeout(async () => {
-      await Voice.stop().then(() => {
-        console.log('stopRecording ()');
-        fetchResponse();
-      });
-    }, 2000);
+    // setTimeout(async () => {
+    await Voice.stop().then(() => {
+      console.log('stopRecording ()  result ', result);
+      fetchResponse(text);
+    });
+    // }, 2000);
   };
 
   const clear = () => {
@@ -75,35 +99,35 @@ const HomeScreen = () => {
     setMessages([]);
   };
 
-  const startTextToSpeach = (message: Message) => {
+  const startTextToSpeach = (message: Message | string) => {
+    Tts.stop();
     Tts.getInitStatus().then(() => {
-      Tts.setDefaultLanguage('es-ES');
-      Tts.speak(message.content);
+      Tts.setDefaultLanguage(lenguage);
+      if (typeof message === 'string') {
+        Tts.speak(message);
+      } else {
+        Tts.speak(message.content);
+      }
     });
-
-    // if(!message.content.includes('https')){
     setSpeaking(true);
-    // playing response with the voice id and voice speed
-
-    // }
   };
 
-  const fetchResponse = async () => {
+  const fetchResponse = async (text: string) => {
     console.log('fetchResponse()', result);
 
-    if (result.trim().length > 0) {
+    if (text.trim().length > 0) {
       console.log('INGRESA AL IF');
 
       setLoading(true);
       let newMessages = [...messages];
-      newMessages.push({role: 'user', content: result.trim()});
+      newMessages.push({role: 'user', content: text.trim()});
       setMessages([...newMessages]);
 
       // scroll to the bottom of the view
       updateScrollView();
 
       // fetching response from chatGPT with our prompt and old messages
-      apiCall(result.trim(), newMessages).then((res: any) => {
+      apiCall(text.trim(), newMessages).then((res: any) => {
         // console.log('got api data');
         setLoading(false);
         console.log('responde : ', res);
@@ -134,7 +158,6 @@ const HomeScreen = () => {
     Voice.onSpeechError = speechErrorHandler;
 
     // text to speech events
-    Tts.setDefaultLanguage('en-IE');
     Tts.addEventListener('tts-start', event => console.log('start', event));
     Tts.addEventListener('tts-finish', event => {
       console.log('finish', event);
@@ -157,31 +180,54 @@ const HomeScreen = () => {
   console.log('result', result);
 
   return (
-    <>
+    <ImageBackground
+      source={require('../../../assets/images/background.jpg')}
+      className="flex-1 bg-cover">
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="light"
+        blurAmount={10}
+      />
       <View className="flex-1 flex mx-5">
-        <View className="flex-row justify-center">
-          <Image
+        <View className="flex-row h-12 justify-center">
+          {/* <Image
             className="w-36 h-36"
             source={require('../../../assets/images/welcome.png')}
-          />
+          /> */}
         </View>
+
         {messages.length > 0 ? (
-          <Messages messages={messages} ScrollViewRef={ScrollViewRef} />
+          <Messages
+            messages={messages}
+            ScrollViewRef={ScrollViewRef}
+            startTextToSpeech={startTextToSpeach}
+          />
         ) : (
-          <Features />
+          <>
+            <SwitchSelector
+              options={options}
+              buttonColor={'gray'}
+              selectedColor={'#fff'}
+              initial={0}
+              onPress={(value: any) => setLenguage(value)}
+            />
+            <Features />
+          </>
         )}
       </View>
       <FooterActions
         loading={loading}
         recording={recording}
-        stopRecording={stopRecording}
+        stopRecording={() => {
+          console.log('stopRecording MANUAL  ()');
+        }}
         startRecording={startRecording}
         messages={messages}
         speaking={speaking}
         stopSpeaking={stopSpeaking}
         clear={clear}
       />
-    </>
+    </ImageBackground>
   );
 };
 

@@ -1,4 +1,10 @@
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import React from 'react';
 
 interface Props {
@@ -23,23 +29,20 @@ const FooterActions = ({
   clear,
 }: Props) => {
   return (
-    <View className="flex justify-center items-center border-t-2 border-t-slate-200 absolute bottom-0 right-0 left-0 p-2 rounded-tl-3xl rounded-tr-3xl">
+    <View className="flex justify-center items-center border-t-slate-200 h-28  absolute bottom-0 right-0 left-0 p-2 rounded-tl-3xl rounded-tr-3xl">
       {loading ? (
-        <Image
-          className=" h-20 w-20"
-          source={require('../../../assets/images/loading.gif')}
-        />
+        <ActivityIndicator size="large" color="#e2e2e2" />
       ) : recording ? (
         <TouchableOpacity className="space-y-2" onPress={stopRecording}>
           <Image
-            className="rounded-full h-20 w-20"
+            className="rounded-full h-16 w-16"
             source={require('../../../assets/images/voiceLoading.gif')}
           />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity onPress={startRecording}>
           <Image
-            className="rounded-full h-20 w-20"
+            className="rounded-full h-24 w-24"
             source={require('../../../assets/images/recordingIcon.png')}
           />
         </TouchableOpacity>

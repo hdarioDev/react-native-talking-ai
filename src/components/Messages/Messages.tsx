@@ -1,19 +1,20 @@
-import {View, Text, Image, ScrollView} from 'react-native';
+import {View, Text, Image, ScrollView, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {Message} from '../../constants/dummy';
 
 interface Props {
   messages: Message[];
   ScrollViewRef?: any;
+  startTextToSpeech: (message: Message) => void;
 }
 
-const Messages = ({messages, ScrollViewRef}: Props) => {
+const Messages = ({messages, ScrollViewRef, startTextToSpeech}: Props) => {
   return (
     <View className="flex-1 space-y-2 ">
-      <Text className="text-2xl text-gray-700 font-semibold ml-1">
-        Assistant
+      <Text className="text-2xl text-teal-200 font-semibold ml-1 pt-5">
+        Nana
       </Text>
-      <View className="bg-neutral-200 rounded-3xl p-4 h-5/6">
+      <View className="border border-gray-400 rounded-3xl p-4 h-2/3">
         <ScrollView
           className="space-y-4"
           bounces={false}
@@ -38,6 +39,15 @@ const Messages = ({messages, ScrollViewRef}: Props) => {
                   <View
                     key={index}
                     className="bg-emerald-100 rounded-2xl p-3 w-3/4 rounded-tl-none">
+                    <TouchableOpacity
+                      className="absolute top-0 right-0 -mr-2 -mt-2"
+                      onPress={() => startTextToSpeech(message)}>
+                      <Image
+                        className="w-7 h-7 rounded-full"
+                        source={require('../../../assets/images/speak.png')}
+                      />
+                    </TouchableOpacity>
+
                     <Text className="text-gray-700">{message.content}</Text>
                   </View>
                 );
