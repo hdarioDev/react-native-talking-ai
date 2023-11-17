@@ -68,6 +68,8 @@ const HomeScreen = () => {
 
   const speechErrorHandler = (e: SpeechErrorEvent) => {
     console.log('speech error', e);
+    console.log('result ', result);
+    setSpeaking(false);
   };
 
   const startRecording = async () => {
@@ -99,18 +101,24 @@ const HomeScreen = () => {
     setMessages([]);
   };
 
-  const startTextToSpeach = (message: Message | string) => {
+  const startTextToSpeach = (message: Message) => {
     Tts.stop();
-    Tts.getInitStatus().then(() => {
-      Tts.setDefaultLanguage(lenguage);
-      if (typeof message === 'string') {
-        Tts.speak(message);
-      } else {
-        Tts.speak(message.content);
-      }
-    });
+    // Tts.getInitStatus().then(() => {
+    console.log('lenguage started', lenguage);
+
+    // if (typeof message === 'string') {
+    //   Tts.speak(message);
+    // } else {
+    Tts.speak(message.content);
+    // }
+    // });
     setSpeaking(true);
   };
+
+  useEffect(() => {
+    Tts.setDefaultLanguage(lenguage);
+    console.log('Nuevo idioma:', lenguage);
+  }, [lenguage]);
 
   const fetchResponse = async (text: string) => {
     console.log('fetchResponse()', result);
@@ -209,7 +217,17 @@ const HomeScreen = () => {
               buttonColor={'gray'}
               selectedColor={'#fff'}
               initial={0}
-              onPress={(value: any) => setLenguage(value)}
+              onPress={(value: any) => {
+                console.log('SETEAR ', value);
+                console.log(typeof value);
+
+                if (value === '0') {
+                  setLenguage('es-ES');
+                }
+                if (value === '1') {
+                  setLenguage('en-US');
+                }
+              }}
             />
             <Features />
           </>
