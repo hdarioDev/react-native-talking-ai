@@ -14,28 +14,11 @@ import Voice, {
   SpeechResultsEvent,
   SpeechStartEvent,
 } from '@react-native-community/voice';
-import {Features, FooterActions, Messages} from '../../components';
-import {Message} from '../../constants/dummy';
-import {apiCall} from '../../api/openAi';
+import {FooterActions, Messages} from '../../components';
+import {Message, optionsLenguage} from '../../constants/dummy';
+import {chatgptApiCall} from '../../api/openAi';
 import {BlurView} from '@react-native-community/blur';
 import SwitchSelector from 'react-native-switch-selector';
-
-// Tts.setDefaultLanguage(lenguage);
-
-const options = [
-  {
-    label: 'Español',
-    value: '0',
-    testID: 'es-ES',
-    accessibilityLabel: 'es-ES',
-  },
-  {
-    label: 'Inglés',
-    value: '1',
-    testID: 'en-US',
-    accessibilityLabel: 'en-US',
-  },
-];
 
 const HomeScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -56,11 +39,10 @@ const HomeScreen = () => {
   };
 
   const speechEndHandler = (e: SpeechEndEvent) => {
-    console.log('FIN ???? speech end', e);
+    console.log('speech end', e);
   };
 
   const speechResultsHandler = (e: SpeechResultsEvent) => {
-    console.log('>>>>>>>>>>>>>>>>>>>>>   speech event', e);
     const text = e.value ? e.value[0] : '';
     setResult(text);
     stopRecording(text);
@@ -68,13 +50,13 @@ const HomeScreen = () => {
 
   const speechErrorHandler = (e: SpeechErrorEvent) => {
     console.log('speech error', e);
-    console.log('result ', result);
     setSpeaking(false);
+    setRecording(false);
   };
 
   const startRecording = async () => {
     setRecording(true);
-    Tts.stop();
+    await Tts.stop();
     try {
       // await Voice.start('en-GB'); // en-US
       await Voice.start(lenguage);
@@ -82,14 +64,31 @@ const HomeScreen = () => {
       console.log('error', error);
     }
   };
+
   const stopRecording = async (text: string) => {
     console.log('stopRecording ()', text);
 
     setRecording(false);
     // setTimeout(async () => {
-    await Voice.stop().then(() => {
-      console.log('stopRecording ()  result ', result);
-      fetchResponse(text);
+    await Voice.stop();
+    console.log('stopRecording ()  text ', text);
+    console.log('EN STATE ', messages);
+    setMessages(prevMessages => {
+      console.log('EN STATE ', prevMessages);
+
+      // Llamamos a fetchResponse con el último estado actualizado
+      // fetchResponse(text, prevMessages);
+
+      // Actualizamos el estado
+      const newMessages = [
+        ...prevMessages,
+        {role: 'user', content: text.trim()},
+      ];
+      fetchResponse(text, newMessages);
+      console.log('EN STATE después de actualizar', newMessages);
+
+      // Devolvemos un nuevo array o llamamos a la función directamente
+      return newMessages;
     });
     // }, 2000);
   };
@@ -99,6 +98,8 @@ const HomeScreen = () => {
     setSpeaking(false);
     setLoading(false);
     setMessages([]);
+    setResult('');
+    console.log('messsges ', messages);
   };
 
   const startTextToSpeach = (message: Message) => {
@@ -120,28 +121,35 @@ const HomeScreen = () => {
     console.log('Nuevo idioma:', lenguage);
   }, [lenguage]);
 
-  const fetchResponse = async (text: string) => {
+  const fetchResponse = async (text: string, messages) => {
     console.log('fetchResponse()', result);
 
     if (text.trim().length > 0) {
-      console.log('INGRESA AL IF');
+      console.log(
+        'INGRESA AL IF CON  messages ',
+        JSON.stringify(messages, null, 2),
+      );
 
       setLoading(true);
-      let newMessages = [...messages];
-      newMessages.push({role: 'user', content: text.trim()});
-      setMessages([...newMessages]);
+      // let newMessages = [...messages];
+      // console.log('ANTES newMessages', JSON.stringify(newMessages, null, 2));
+
+      // newMessages.push({role: 'user', content: text.trim()});
+      // setMessages([...messages, {role: 'user', content: text.trim()}]);
+
+      console.log('DESPUES newMessages', JSON.stringify(messages, null, 2));
 
       // scroll to the bottom of the view
       updateScrollView();
 
       // fetching response from chatGPT with our prompt and old messages
-      apiCall(text.trim(), newMessages).then((res: any) => {
+      chatgptApiCall(messages).then((res: any) => {
         // console.log('got api data');
         setLoading(false);
         console.log('responde : ', res);
 
         if (res.success) {
-          setMessages([...res.data]);
+          setMessages(res.data);
           setResult('');
           updateScrollView();
 
@@ -154,7 +162,7 @@ const HomeScreen = () => {
         }
       });
     } else {
-      console.log('NO HAY RESULT ');
+      Alert.alert('Error al grabar audio');
     }
   };
 
@@ -174,9 +182,9 @@ const HomeScreen = () => {
     Tts.addEventListener('tts-cancel', event => console.log('cancel', event));
 
     return () => {
-      // destroy the voice instance after component unmounts
       Voice.destroy().then(Voice.removeAllListeners);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateScrollView = () => {
@@ -213,7 +221,7 @@ const HomeScreen = () => {
         ) : (
           <>
             <SwitchSelector
-              options={options}
+              options={optionsLenguage}
               buttonColor={'gray'}
               selectedColor={'#fff'}
               initial={0}
@@ -229,7 +237,7 @@ const HomeScreen = () => {
                 }
               }}
             />
-            <Features />
+            {/* <Features /> */}
           </>
         )}
       </View>
@@ -238,6 +246,7 @@ const HomeScreen = () => {
         recording={recording}
         stopRecording={() => {
           console.log('stopRecording MANUAL  ()');
+          setRecording(false);
         }}
         startRecording={startRecording}
         messages={messages}

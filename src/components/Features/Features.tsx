@@ -17,7 +17,7 @@ const Features = () => {
       <View className="bg-purple-200 p-4 rounded-xl space-y-2">
         <View className="flex-row items-center space-x-2">
           <Image
-            source={require('../../../assets/images/dell.png')}
+            source={require('../../../assets/images/chat.png')}
             className="w-10 h-10"
           />
           <Text className="font-semibold text-gray-700 text-xl">DALL-E</Text>
@@ -26,7 +26,7 @@ const Features = () => {
       <View className="bg-cyan-200 p-4 rounded-xl space-y-2">
         <View className="flex-row items-center space-x-2">
           <Image
-            source={require('../../../assets/images/dell.png')}
+            source={require('../../../assets/images/chat.png')}
             className="w-10 h-10"
           />
           <Text className="font-semibold text-gray-700 text-xl">Smart AI</Text>

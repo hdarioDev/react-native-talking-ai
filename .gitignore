@@ -65,3 +65,5 @@ buck-out/
 
 # Excluir el archivo environment.ts
 src/constants/environment.ts
+
+android/app/my-upload-key-nana.keystore

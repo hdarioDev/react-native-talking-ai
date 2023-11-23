@@ -42,10 +42,10 @@ export default function LoginScreen() {
           />
         </View>
         <TouchableOpacity
-          className="bg-emerald-600 h-14 mx-5 p-4 rounded-xl"
+          className="bg-emerald-600 h-14 mx-5 p-3 rounded-xl"
           onPress={() => navigation.navigate('home')}>
           <Text className="text-center font-bold text-slate-50 text-xl">
-            Get Started
+            Habla con tu asistente
           </Text>
         </TouchableOpacity>
       </View>

@@ -23,7 +23,7 @@ export const apiCall = async (prompt: string, messages: ResponseMessage[]) => {
     //   return dalleApiCall(prompt, messages);
     // } else {
     console.log('chatgpt api call');
-    return chatgptApiCall(prompt, messages);
+    // return chatgptApiCall(prompt, messages);
     // }
   } catch (err) {
     console.log('error apiCall: ', err);
@@ -52,19 +52,31 @@ const checkIfArtMessage = async (prompt: string): Promise<boolean> => {
   }
 };
 
-const chatgptApiCall = async (prompt: string, messages: ResponseMessage[]) => {
+export const chatgptApiCall = async (messages: ResponseMessage[]) => {
+  console.log('======>   chatgptApiCall ', JSON.stringify(messages, null, 2));
+
   try {
+    console.log('LE ENVIO ', JSON.stringify(messages, null, 2));
+
     const response = await postData(chatgptUrl, {
       model: 'gpt-3.5-turbo',
       messages,
     });
 
     const answer = response?.choices[0]?.message?.content;
-    console.log('answer chatgpt: ', answer);
+    // console.log('answer chatgpt: ', answer);
 
-    messages.push({role: 'assistant', content: answer.trim()});
+    const newMessages = [
+      ...messages,
+      {role: 'assistant', content: answer.trim()},
+    ];
 
-    return Promise.resolve({success: true, data: messages});
+    console.log(
+      '======>  RETURN API MESS ',
+      JSON.stringify(newMessages, null, 2),
+    );
+
+    return Promise.resolve({success: true, data: newMessages});
   } catch (err) {
     console.log('error: ', err);
     return Promise.resolve({success: false, msg: (err as Error).message});
