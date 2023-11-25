@@ -28,13 +28,15 @@ describe('LoginScreen', () => {
   it('renders the correct text', () => {
     const {getByText} = renderLoginScreen();
 
-    expect(getByText('Get Started')).toBeDefined();
+    expect(getByText('Hablar con la asistente')).toBeDefined();
   });
 
   it('navigates to home screen when "Get Started" button is pressed', () => {
     const {getByText} = renderLoginScreen();
 
-    fireEvent.press(getByText('Get Started'));
-    expect(mockedNavigation).toHaveBeenCalledWith('home');
+    fireEvent.press(getByText('Hablar con la asistente'));
+    expect(mockedNavigation).toHaveBeenCalledWith('home', {
+      generateImage: false,
+    });
   });
 });
