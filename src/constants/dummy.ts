@@ -24,18 +24,3 @@ export const dummyMessages: Message[] = [
       'https://storage.googleapis.com/pai-images/ae74b3002bfe4b538493ca7aedb6a300.jpeg',
   },
 ];
-
-export const optionsLenguage = [
-  {
-    label: 'Español',
-    value: '0',
-    testID: 'es-ES',
-    accessibilityLabel: 'es-ES',
-  },
-  {
-    label: 'Inglés',
-    value: '1',
-    testID: 'en-US',
-    accessibilityLabel: 'en-US',
-  },
-];

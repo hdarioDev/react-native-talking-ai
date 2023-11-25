@@ -11,10 +11,7 @@ interface Props {
 const Messages = ({messages, ScrollViewRef, startTextToSpeech}: Props) => {
   return (
     <View className="flex-1 space-y-2 ">
-      <Text className="text-2xl text-teal-200 font-semibold ml-1 pt-5">
-        Nana
-      </Text>
-      <View className="border border-gray-400 rounded-3xl p-4 h-2/3">
+      <View className="border border-gray-400 rounded-3xl mt-1 p-3 h-3/4">
         <ScrollView
           className="space-y-4"
           bounces={false}

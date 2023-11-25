@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
-  // Image,
+  Image,
   Alert,
   ScrollView,
   ImageBackground,
@@ -14,20 +14,71 @@ import Voice, {
   SpeechResultsEvent,
   SpeechStartEvent,
 } from '@react-native-community/voice';
-import {FooterActions, Messages} from '../../components';
-import {Message, optionsLenguage} from '../../constants/dummy';
-import {chatgptApiCall} from '../../api/openAi';
 import {BlurView} from '@react-native-community/blur';
 import SwitchSelector from 'react-native-switch-selector';
 
-const HomeScreen = () => {
+import {FooterActions, HeaderNav, Messages} from '../../components';
+import {Message} from '../../constants/dummy';
+import {MAX_DAILY_QUESTIONS, optionsLenguage} from '../../constants/config';
+import {AsyncStorageRepository} from '../../infrastructure/AsyncStorageRepository';
+import {StorageRepository} from '../../domain/StorageInterface';
+import {ChatRepository} from '../../domain/ChatInterface';
+import {OpenAiChatRepository} from '../../infrastructure/ChatRepository';
+import {CHAT_GPT_URL, DALLE_URL} from '../../constants/environment';
+import {OpenAiDalleRepository} from '../../infrastructure/DalleRepository';
+import {DalleRepository} from '../../domain/DalleInterface';
+
+interface HomeScreenProps {
+  route: {
+    params?: {
+      generateImage?: boolean;
+    };
+  };
+}
+
+const HomeScreen = ({route}: HomeScreenProps) => {
+  const generateImage = route.params?.generateImage || false;
+  const storageRepository: StorageRepository = new AsyncStorageRepository();
+  const chatRepository: ChatRepository = new OpenAiChatRepository({
+    chatgptUrl: CHAT_GPT_URL,
+  });
+  const dalleRepository: DalleRepository = new OpenAiDalleRepository({
+    dalleUrl: DALLE_URL,
+  });
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [recording, setRecording] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const ScrollViewRef = useRef<ScrollView>(null);
   const [lenguage, setLenguage] = useState('es-ES');
+  const [isMaxQuestions, setIsMaxQuestions] = useState(false);
+  const [image, setImage] = useState('');
+
+  useEffect(() => {
+    const verifyCanAsk = async () => {
+      const currentCount = await storageRepository.getQuestionCount();
+      if (currentCount >= MAX_DAILY_QUESTIONS) {
+        setIsMaxQuestions(true);
+      }
+    };
+    verifyCanAsk();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const checkAndResetDailyCount = async () => {
+      const lastQuestionDate = await storageRepository.getLastQuestionDate();
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      if (lastQuestionDate !== currentDate) {
+        await storageRepository.saveQuestionCount(0);
+        await storageRepository.saveLastQuestionDate(currentDate);
+      }
+    };
+    checkAndResetDailyCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const stopSpeaking = () => {
     Tts.stop();
@@ -44,21 +95,21 @@ const HomeScreen = () => {
 
   const speechResultsHandler = (e: SpeechResultsEvent) => {
     const text = e.value ? e.value[0] : '';
-    setResult(text);
     stopRecording(text);
   };
 
   const speechErrorHandler = (e: SpeechErrorEvent) => {
-    console.log('speech error', e);
     setSpeaking(false);
     setRecording(false);
+    if (e.error && e.error.message === '7/No match') {
+      Alert.alert('No se reconoció el comando. Por favor, intenta nuevamente.');
+    }
   };
 
   const startRecording = async () => {
     setRecording(true);
     await Tts.stop();
     try {
-      // await Voice.start('en-GB'); // en-US
       await Voice.start(lenguage);
     } catch (error) {
       console.log('error', error);
@@ -66,31 +117,31 @@ const HomeScreen = () => {
   };
 
   const stopRecording = async (text: string) => {
-    console.log('stopRecording ()', text);
-
     setRecording(false);
-    // setTimeout(async () => {
     await Voice.stop();
-    console.log('stopRecording ()  text ', text);
-    console.log('EN STATE ', messages);
-    setMessages(prevMessages => {
-      console.log('EN STATE ', prevMessages);
+    if (generateImage) {
+      fetchApiCallImagesGenerate(text);
+    } else {
+      setMessages(prevMessages => {
+        const newMessages = [
+          ...prevMessages,
+          {role: 'user', content: text.trim()},
+        ];
+        fetchResponse(text, newMessages);
+        return newMessages;
+      });
+    }
 
-      // Llamamos a fetchResponse con el último estado actualizado
-      // fetchResponse(text, prevMessages);
+    await controlNumberQuestions();
+  };
 
-      // Actualizamos el estado
-      const newMessages = [
-        ...prevMessages,
-        {role: 'user', content: text.trim()},
-      ];
-      fetchResponse(text, newMessages);
-      console.log('EN STATE después de actualizar', newMessages);
-
-      // Devolvemos un nuevo array o llamamos a la función directamente
-      return newMessages;
-    });
-    // }, 2000);
+  const controlNumberQuestions = async () => {
+    const currentCount = await storageRepository.getQuestionCount();
+    if (currentCount < MAX_DAILY_QUESTIONS) {
+      await storageRepository.saveQuestionCount(currentCount + 1);
+    } else {
+      setIsMaxQuestions(true);
+    }
   };
 
   const clear = () => {
@@ -98,72 +149,62 @@ const HomeScreen = () => {
     setSpeaking(false);
     setLoading(false);
     setMessages([]);
-    setResult('');
-    console.log('messsges ', messages);
+    setLenguage('es-ES');
   };
 
   const startTextToSpeach = (message: Message) => {
     Tts.stop();
-    // Tts.getInitStatus().then(() => {
-    console.log('lenguage started', lenguage);
-
-    // if (typeof message === 'string') {
-    //   Tts.speak(message);
-    // } else {
     Tts.speak(message.content);
-    // }
-    // });
     setSpeaking(true);
   };
 
   useEffect(() => {
     Tts.setDefaultLanguage(lenguage);
-    console.log('Nuevo idioma:', lenguage);
   }, [lenguage]);
 
-  const fetchResponse = async (text: string, messages) => {
-    console.log('fetchResponse()', result);
-
+  const fetchResponse = async (text: string, messagesSend: Message[]) => {
+    console.log('fetchResponse ', text);
     if (text.trim().length > 0) {
-      console.log(
-        'INGRESA AL IF CON  messages ',
-        JSON.stringify(messages, null, 2),
-      );
-
       setLoading(true);
-      // let newMessages = [...messages];
-      // console.log('ANTES newMessages', JSON.stringify(newMessages, null, 2));
-
-      // newMessages.push({role: 'user', content: text.trim()});
-      // setMessages([...messages, {role: 'user', content: text.trim()}]);
-
-      console.log('DESPUES newMessages', JSON.stringify(messages, null, 2));
-
-      // scroll to the bottom of the view
       updateScrollView();
-
-      // fetching response from chatGPT with our prompt and old messages
-      chatgptApiCall(messages).then((res: any) => {
-        // console.log('got api data');
-        setLoading(false);
-        console.log('responde : ', res);
-
-        if (res.success) {
-          setMessages(res.data);
-          setResult('');
-          updateScrollView();
-
-          // now play the response to user
-          console.log('PLAYER SPEAKING ', res.data[res.data.length - 1]);
-
-          startTextToSpeach(res.data[res.data.length - 1]);
-        } else {
-          Alert.alert('Error', res.msg);
-        }
-      });
+      chatRepository
+        .callApi(messagesSend)
+        .then((res: any) => {
+          setLoading(false);
+          if (res) {
+            setMessages(res);
+            updateScrollView();
+            startTextToSpeach(res[res.length - 1]);
+          } else {
+            Alert.alert('Error');
+          }
+        })
+        .catch((err: any) => {
+          setLoading(false);
+          Alert.alert('Error', err.message);
+        });
     } else {
       Alert.alert('Error al grabar audio');
     }
+  };
+
+  const fetchApiCallImagesGenerate = (prompt: string) => {
+    setLoading(true);
+    dalleRepository
+      .callApi(prompt)
+      .then((res: any) => {
+        if (res) {
+          setImage(res);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          Alert.alert('Error', res.msg);
+        }
+      })
+      .catch((err: any) => {
+        setLoading(false);
+        Alert.alert('Error', err.message);
+      });
   };
 
   useEffect(() => {
@@ -193,8 +234,6 @@ const HomeScreen = () => {
     }, 200);
   };
 
-  console.log('result', result);
-
   return (
     <ImageBackground
       source={require('../../../assets/images/background.jpg')}
@@ -204,14 +243,17 @@ const HomeScreen = () => {
         blurType="light"
         blurAmount={10}
       />
-      <View className="flex-1 flex mx-5">
-        <View className="flex-row h-12 justify-center">
-          {/* <Image
-            className="w-36 h-36"
-            source={require('../../../assets/images/welcome.png')}
-          /> */}
-        </View>
 
+      <View className="flex-1 flex mx-5">
+        <View className="flex-row h-12 justify-center" />
+        <HeaderNav />
+        {generateImage && image !== '' && (
+          <Image
+            className="w-full h-2/3 mt-2 rounded-2xl"
+            resizeMode="contain"
+            source={{uri: image}}
+          />
+        )}
         {messages.length > 0 ? (
           <Messages
             messages={messages}
@@ -220,24 +262,22 @@ const HomeScreen = () => {
           />
         ) : (
           <>
-            <SwitchSelector
-              options={optionsLenguage}
-              buttonColor={'gray'}
-              selectedColor={'#fff'}
-              initial={0}
-              onPress={(value: any) => {
-                console.log('SETEAR ', value);
-                console.log(typeof value);
-
-                if (value === '0') {
-                  setLenguage('es-ES');
-                }
-                if (value === '1') {
-                  setLenguage('en-US');
-                }
-              }}
-            />
-            {/* <Features /> */}
+            {!generateImage && (
+              <SwitchSelector
+                options={optionsLenguage}
+                buttonColor={'gray'}
+                selectedColor={'#fff'}
+                initial={0}
+                onPress={(value: any) => {
+                  if (value === '0') {
+                    setLenguage('es-ES');
+                  }
+                  if (value === '1') {
+                    setLenguage('en-US');
+                  }
+                }}
+              />
+            )}
           </>
         )}
       </View>
@@ -245,7 +285,6 @@ const HomeScreen = () => {
         loading={loading}
         recording={recording}
         stopRecording={() => {
-          console.log('stopRecording MANUAL  ()');
           setRecording(false);
         }}
         startRecording={startRecording}
@@ -253,6 +292,7 @@ const HomeScreen = () => {
         speaking={speaking}
         stopSpeaking={stopSpeaking}
         clear={clear}
+        isMaxQuestions={isMaxQuestions}
       />
     </ImageBackground>
   );
