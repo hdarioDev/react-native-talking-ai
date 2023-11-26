@@ -4,5 +4,9 @@ export interface Message {
 }
 
 export interface ChatRepository {
-  callApi(messages: Message[]): Promise<Message[]>;
+  callApi(
+    messages: Message[],
+    lenguage: string,
+    selectedLevel: string,
+  ): Promise<Message[]>;
 }

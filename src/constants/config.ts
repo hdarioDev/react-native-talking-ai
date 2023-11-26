@@ -1,16 +1,18 @@
-export const MAX_DAILY_QUESTIONS = 10;
+import {LanguageCode} from '../hooks/TalkingInterface';
+
+export const MAX_DAILY_QUESTIONS = 200;
 
 export const optionsLenguage = [
   {
     label: 'Español',
     value: '0',
-    testID: 'es-ES',
-    accessibilityLabel: 'es-ES',
+    testID: LanguageCode.ES,
+    accessibilityLabel: LanguageCode.ES,
   },
   {
     label: 'Inglés',
     value: '1',
-    testID: 'en-US',
-    accessibilityLabel: 'en-US',
+    testID: LanguageCode.EN,
+    accessibilityLabel: LanguageCode.EN,
   },
 ];
