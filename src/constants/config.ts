@@ -1,6 +1,6 @@
 import {LanguageCode} from '../hooks/TalkingInterface';
 
-export const MAX_DAILY_QUESTIONS = 200;
+export const MAX_DAILY_QUESTIONS = 10;
 
 export const optionsLenguage = [
   {
