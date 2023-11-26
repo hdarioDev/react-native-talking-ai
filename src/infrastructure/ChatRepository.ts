@@ -1,16 +1,13 @@
 import {postData} from '../api/OpenAiApi';
 import {ChatRepository, Message} from '../domain/ChatInterface';
 import {Roles} from '../hooks/TalkingInterface';
-
-interface OpenAiChatRepositoryProps {
-  chatgptUrl: string;
-}
+import {CHAT_GPT_URL} from '../constants/environment';
 
 export class OpenAiChatRepository implements ChatRepository {
   private readonly chatgptUrl: string;
 
-  constructor(props: OpenAiChatRepositoryProps) {
-    this.chatgptUrl = props.chatgptUrl;
+  constructor() {
+    this.chatgptUrl = CHAT_GPT_URL;
   }
 
   async callApi(

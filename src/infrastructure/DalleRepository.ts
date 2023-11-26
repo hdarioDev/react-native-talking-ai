@@ -1,15 +1,12 @@
 import {postData} from '../api/OpenAiApi';
 import {DalleRepository} from '../domain/DalleInterface';
-
-interface OpenAiDalleRepositoryProps {
-  dalleUrl: string;
-}
+import {DALLE_URL} from '../constants/environment';
 
 export class OpenAiDalleRepository implements DalleRepository {
   private readonly dalleUrl: string;
 
-  constructor(props: OpenAiDalleRepositoryProps) {
-    this.dalleUrl = props.dalleUrl;
+  constructor() {
+    this.dalleUrl = DALLE_URL;
   }
 
   async callApi(prompt: string): Promise<string> {

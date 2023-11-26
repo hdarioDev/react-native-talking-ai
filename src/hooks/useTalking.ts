@@ -15,18 +15,13 @@ import {ChatRepository} from '../domain/ChatInterface';
 import {DalleRepository} from '../domain/DalleInterface';
 import {MAX_DAILY_QUESTIONS} from '../constants/config';
 import {Message} from '../constants/dummy';
-import {CHAT_GPT_URL, DALLE_URL} from '../constants/environment';
 import {EnglishLevel, LanguageCode, Roles} from './TalkingInterface';
 
 export const useTalking = (initialGenerateImage: boolean) => {
   const generateImage = initialGenerateImage;
   const storageRepository: StorageRepository = new AsyncStorageRepository();
-  const chatRepository: ChatRepository = new OpenAiChatRepository({
-    chatgptUrl: CHAT_GPT_URL,
-  });
-  const dalleRepository: DalleRepository = new OpenAiDalleRepository({
-    dalleUrl: DALLE_URL,
-  });
+  const chatRepository: ChatRepository = new OpenAiChatRepository();
+  const dalleRepository: DalleRepository = new OpenAiDalleRepository();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [recording, setRecording] = useState(false);
