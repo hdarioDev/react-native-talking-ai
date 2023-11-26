@@ -82,6 +82,7 @@ const HomeScreen = ({route}: HomeScreenProps) => {
                       setLenguage(LanguageCode.EN);
                     }
                   }}
+                  testID={'es-ES'}
                 />
                 {lenguage === 'en-US' && (
                   <View className="bg-slate-100 rounded-lg mt-3 mx-2">

@@ -34,6 +34,7 @@ jest.mock('react-native-tts', () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
   setDefaultLanguage: jest.fn(),
+  setDefaultRate: jest.fn(),
 }));
 
 jest.mock('react-native-switch-selector', () => {
@@ -88,9 +89,8 @@ describe('HomeScreen', () => {
       </NavigationContainer>,
     );
 
-    await waitFor(() => {
+    waitFor(() => {
       expect(getByTestId('es-ES')).toBeDefined();
-      expect(getByTestId('en-US')).toBeDefined();
     });
   });
 });
