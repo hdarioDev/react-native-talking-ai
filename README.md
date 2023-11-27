@@ -38,13 +38,15 @@ La Talking Chat App es una aplicación de mensajería innovadora que utiliza int
   <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/5bdae3a3-1250-491a-b926-fc6a58a32123" alt="WhatsApp Image 1" width="30%">
   <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/f1acd723-678a-4378-9806-c9636ac7dad6" alt="WhatsApp Image 2" width="30%">
   <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/39e7137a-fbec-4b2e-96d6-daf90fd1776a" alt="WhatsApp Image 3" width="30%">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/f690a82e-77dd-472b-aa6a-e8782e16ad94" alt="WhatsApp Image 4" width="30%">
 </div>
-
 
 ## Descargar App
 
 <div align="center">
+<a href="https://play.google.com/store/apps/details?id=com.apptalkingchatgpt">
   <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Play Store Icon" width="40%">
+</a>
 </div>
 
 ## Authors
