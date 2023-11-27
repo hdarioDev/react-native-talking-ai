@@ -28,25 +28,25 @@ La Talking Chat App es una aplicación de mensajería innovadora que utiliza int
 ## Screenshots
 
 <div align="center">
-  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/4c0309cf-938c-423e-a463-23816129a6d8" alt="Banner Nana" width="50%">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/4c0309cf-938c-423e-a463-23816129a6d8" alt="Banner Nana" width="70%">
+</div>
+<br />
+<div align="center">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/1afec06f-fa89-4228-9795-bd7a7d085ee7" alt="Screenshot 1" width="100%">
+</div>
+<br />
+<div align="center">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/5bdae3a3-1250-491a-b926-fc6a58a32123" alt="WhatsApp Image 1" width="30%">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/f1acd723-678a-4378-9806-c9636ac7dad6" alt="WhatsApp Image 2" width="30%">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/39e7137a-fbec-4b2e-96d6-daf90fd1776a" alt="WhatsApp Image 3" width="30%">
 </div>
 
-<div align="center">
-  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/1afec06f-fa89-4228-9795-bd7a7d085ee7" alt="Screenshot 1" width="50%">
-</div>
-
-<div align="center">
-  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/5bdae3a3-1250-491a-b926-fc6a58a32123" alt="WhatsApp Image 1" width="50%">
-  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/f1acd723-678a-4378-9806-c9636ac7dad6" alt="WhatsApp Image 2" width="50%">
-</div>
-
-<div align="center">
-  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/39e7137a-fbec-4b2e-96d6-daf90fd1776a" alt="WhatsApp Image 3" width="50%">
-</div>
 
 ## Descargar App
 
-[![Descargar en Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.apptalkingchatgpt)
+<div align="center">
+  <img src="https://your-playstore-icon-url" alt="Play Store Icon" width="40%">
+</div>
 
 ## Authors
 
