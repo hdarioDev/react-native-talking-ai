@@ -1,19 +1,21 @@
 ## Talking Chat App 🗣️📱
 
 La Talking Chat App es una aplicación de mensajería innovadora que utiliza inteligencia artificial para proporcionar una experiencia de conversación única. Desarrollada con React Native, TypeScript y siguiendo los principios de arquitectura limpia, esta aplicación está diseñada para ser eficiente, modular y fácil de mantener.
+<div align="center">
+  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/4c0309cf-938c-423e-a463-23816129a6d8" alt="Banner Nana" width="70%">
+</div>
 
 ## Características Destacadas 🚀
-**Conversaciones Habladas:** Habla con la aplicación y obtén respuestas coherentes y contextualmente relevantes.
+- **Conversaciones Habladas**: Habla con la aplicación y obtén respuestas coherentes y contextualmente relevantes.
 
-**Generación de Imágenes:**Explora el mundo visual con la capacidad de generar imágenes a partir de descripciones y preguntas.
+- **Generación de Imágenes**: Experimenta con la generación de imágenes a través de comandos de voz.
 
-**Soporte Multilingüe:** Cambia el idioma de la conversación con facilidad. ¡Habla en tu idioma preferido!
+- **Configuración del Idioma**: Selecciona el idioma de tu preferencia para las interacciones.
 
-**Niveles de Inglés Personalizados:** Ajusta el nivel de habilidad en inglés para obtener respuestas adaptadas a tu comprensión del idioma.
+- **Niveles de Inglés**: Ajusta el nivel de inglés para obtener respuestas adaptadas a tu dominio del idioma.
 
-**Arquitectura Limpia:** Desarrollada utilizando una arquitectura limpia que facilita la expansión y mantenimiento del código.
+- **Arquitectura Limpia**: Desarrollada utilizando una arquitectura limpia y escalable.
 
-**Pruebas Automatizadas:** Garantizamos la calidad del código mediante pruebas automatizadas para una experiencia sin errores.
 
 ## Tecnologías Utilizadas
 
@@ -23,13 +25,10 @@ La Talking Chat App es una aplicación de mensajería innovadora que utiliza int
 - Testing Library
 - Jest
 - Github Actions (CI)
-- GPT-3 API
+- Open AI (GPT, DALLE)
 
 ## Screenshots
 
-<div align="center">
-  <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/4c0309cf-938c-423e-a463-23816129a6d8" alt="Banner Nana" width="70%">
-</div>
 <br />
 <div align="center">
   <img src="https://github.com/hdarioDev/react-native-talking-ai/assets/63020855/1afec06f-fa89-4228-9795-bd7a7d085ee7" alt="Screenshot 1" width="100%">
@@ -45,7 +44,7 @@ La Talking Chat App es una aplicación de mensajería innovadora que utiliza int
 ## Descargar App
 
 <div align="center">
-  <img src="https://your-playstore-icon-url" alt="Play Store Icon" width="40%">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Play Store Icon" width="40%">
 </div>
 
 ## Authors
